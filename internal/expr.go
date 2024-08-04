@@ -15,6 +15,7 @@ var atoi = expr.Function(
 	strconv.Atoi,
 )
 
-func Compile(exp string, env map[string]any) (*vm.Program, error) {
-	return expr.Compile(exp, expr.Env(env), atoi)
+func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, error) {
+	opts = append(opts, expr.Env(env), atoi)
+	return expr.Compile(exp, opts...)
 }

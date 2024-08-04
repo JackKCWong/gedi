@@ -2,9 +2,6 @@ package internal
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/csv"
-	"fmt"
 	"io"
 )
 
@@ -29,47 +26,6 @@ func (l LineReader) Read(r io.Reader) (chan Record, error) {
 	}()
 
 	return lines, nil
-}
-
-var _ = (RecordReader)(CsvReader{})
-
-type CsvReader struct {
-	reader LineReader
-}
-
-// Read a csv file and return a `chan []string` of rows and cells
-func (c CsvReader) Read(r io.Reader) (chan Record, error) {
-	lines, err := c.reader.Read(r)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read csv: %w", err)
-	}
-
-	records := make(chan Record)
-	go func() {
-		defer close(records)
-		buf := bytes.Buffer{}
-		for l := range lines {
-			buf.Reset()
-			buf.WriteString(l.raw)
-			csvRd := csv.NewReader(&buf)
-			record, err := csvRd.Read()
-			if err == io.EOF {
-				break
-			}
-
-			if err != nil {
-				fmt.Printf("failed to read csv: %q\n", err)
-				continue
-			}
-
-			records <- Record{
-				raw:    l.raw,
-				parsed: record,
-			}
-		}
-	}()
-
-	return records, nil
 }
 
 // var _ = (RecordReader)(JsonLReader{})
