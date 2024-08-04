@@ -6,10 +6,10 @@ import (
 	"github.com/expr-lang/expr"
 )
 
-var _ = (Processor)(Filter{})
+var _ = (RecordProcessor)(Filter{})
 
 type Filter struct {
-	expr string
+	Expr string
 }
 
 // Process implements Processor. It prints out the original record if the expr eval to true
@@ -18,7 +18,7 @@ func (f Filter) Process(input <-chan any) (chan string, error) {
 		"x": "",
 	}
 
-	exp, err := Compile(f.expr, env)
+	exp, err := Compile(f.Expr, env)
 	if err != nil {
 		return nil, fmt.Errorf("failed to compile expr: %w", err)
 	}
@@ -31,7 +31,7 @@ func (f Filter) Process(input <-chan any) (chan string, error) {
 			env["x"] = x
 			res, err := expr.Run(exp, env)
 			if err != nil {
-				out <- fmt.Sprintf("error in running expr: %q\n", err)
+				out <- fmt.Sprintf("error in running expr: %q", err)
 				continue
 			}
 

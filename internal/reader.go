@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-var _ = (InputReader)(LineReader{})
+var _ = (RecordReader)(LineReader{})
 
 type LineReader struct{}
 
@@ -26,7 +26,7 @@ func (l LineReader) Read(r io.Reader) (chan any, error) {
 	return lines, nil
 }
 
-var _ = (InputReader)(CsvReader{})
+var _ = (RecordReader)(CsvReader{})
 
 type CsvReader struct{}
 
@@ -44,6 +44,7 @@ func (c CsvReader) Read(r io.Reader) (chan any, error) {
 
 			if err != nil {
 				fmt.Printf("failed to read csv: %q\n", err)
+				continue
 			}
 
 			records <- record

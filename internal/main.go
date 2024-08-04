@@ -5,17 +5,24 @@ import (
 	"io"
 )
 
-type InputReader interface {
+type RecordReader interface {
 	Read(r io.Reader) (chan any, error)
 }
 
-type Processor interface {
+type RecordProcessor interface {
 	Process(<-chan any) (chan string, error)
 }
 
 type Gedi struct {
-	reader    InputReader
-	processor Processor
+	reader    RecordReader
+	processor RecordProcessor
+}
+
+func New(reader RecordReader, processor RecordProcessor) *Gedi {
+	return &Gedi{
+		reader:    reader,
+		processor: processor,
+	}
 }
 
 func (g Gedi) Run(input io.Reader) error {
