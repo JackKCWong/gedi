@@ -34,7 +34,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	// rootCmd.Flags().StringP("type", "t", "line", "file type of the input file, can be line|csv|jsonl|jsonarray")
+	rootCmd.Flags().StringP("type", "t", "line", "file type of the input file, can be line|csv|jsonl|jsonarray")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
 	// rootCmd.Flags().StringP("mode", "m", "filter", "operation mode, can be filter|map|reduce")
 }

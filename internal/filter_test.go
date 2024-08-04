@@ -15,11 +15,14 @@ func TestFilter(t *testing.T) {
 			"atoi(x) % 2 == 0",
 		}
 
-		x := make(chan any)
+		x := make(chan Record)
 		go func() {
 			defer close(x)
 			for i := 0; i < 10; i++ {
-				x <- strconv.Itoa(i)
+				x <- Record{
+					raw:    strconv.Itoa(i),
+					parsed: strconv.Itoa(i),
+				}
 			}
 		}()
 

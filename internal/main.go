@@ -5,12 +5,17 @@ import (
 	"io"
 )
 
+type Record struct {
+	raw    string
+	parsed any
+}
+
 type RecordReader interface {
-	Read(r io.Reader) (chan any, error)
+	Read(r io.Reader) (chan Record, error)
 }
 
 type RecordProcessor interface {
-	Process(<-chan any) (chan string, error)
+	Process(<-chan Record) (chan string, error)
 }
 
 type Gedi struct {

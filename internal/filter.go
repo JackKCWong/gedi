@@ -13,7 +13,7 @@ type Filter struct {
 }
 
 // Process implements Processor. It prints out the original record if the expr eval to true
-func (f Filter) Process(input <-chan any) (chan string, error) {
+func (f Filter) Process(input <-chan Record) (chan string, error) {
 	env := map[string]any{
 		"x": "",
 	}
@@ -27,8 +27,8 @@ func (f Filter) Process(input <-chan any) (chan string, error) {
 
 	go func() {
 		defer close(out)
-		for x := range input {
-			env["x"] = x
+		for r := range input {
+			env["x"] = r.parsed
 			res, err := expr.Run(exp, env)
 			if err != nil {
 				out <- fmt.Sprintf("error in running expr: %q", err)
@@ -36,7 +36,7 @@ func (f Filter) Process(input <-chan any) (chan string, error) {
 			}
 
 			if b, ok := res.(bool); ok && b {
-				out <- fmt.Sprintf("%s", x)
+				out <- fmt.Sprintf("%s", r.raw)
 			}
 		}
 	}()
