@@ -132,6 +132,10 @@ var after = expr.Function(
 
 func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, error) {
 	env["now"] = now
+	env["msec"] = time.Millisecond
+	env["sec"] = time.Second
+	env["min"] = time.Minute
+	env["hour"] = time.Hour
 	env["day"] = 24 * time.Hour
 	env["week"] = 7 * 24 * time.Hour
 	env["month"] = 30 * 24 * time.Hour

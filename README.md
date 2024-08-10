@@ -19,6 +19,22 @@ Additional vars / functions:
 
 * `now`: `time.Now()` at the start of the program, provided to avoid calling `time.Now()` repeatedly in large files.
 
+* `msec`: 1 `time.Millsecond`
+
+* `sec`: 1 `time.Second`
+
+* `min`: 1 `time.Minute`
+
+* `hour`: 1 `time.Hour`
+
+* `day`: 24 `time.Hour`
+
+* `week`: 7 * 24 `time.Hour`
+
+* `month`: 30 * 24 `time.Hour`
+
+* `year`: 365 * 24 `time.Hour`
+
 * `localtime(string)`: guess time from a given string as if it's a local time. e.g. assuming local is HTK, `"2023-01-01 00:00:00 WARN foobar" | localtime()` gives `2023-01-01 00:00:00 UTC+08:00`
 
 * `utctime(string)`: guess time from a given string as if it's a UTC time. e.g. `"2023-01-01 00:00:00 WARN foobar" | utctime()` gives `2023-01-01 00:00:00 UTC+0000`
@@ -26,6 +42,10 @@ Additional vars / functions:
 * `tztime(string, string)`: guess time from a given string as if it's a given timezone time. e.g. `"2023-01-01 00:00:00 WARN foobar" | tztime("UTC+8")` gives `2023-01-01 00:00:00 UTC+08:00`
 
 * `within(time.Time, string)`: checks if a given time is within a given duration comapred to `now`. e.g. find log lines that are within the last 24 hours: `x[0:20] | localtime() | within("-24h")`
+
+* `after(time.Time, time.Time)`: checks if the 1st time on or after the 2nd time. 
+
+* `before(time.Time, time.Time)`: checks if the 1st time on or before the 2nd time. 
 
 
 # TODOs
