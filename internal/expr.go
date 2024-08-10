@@ -51,12 +51,44 @@ var tztime = expr.Function(
 	dateparse.ParseIn,
 )
 
+var within = expr.Function(
+	"within",
+	func(params ...any) (any, error) {
+		dt, ok := params[0].(time.Time)
+		if !ok {
+			return false, fmt.Errorf("expecting first parameter to be a time.Time but was: %T", params[0])
+		}
+
+		dur, ok := params[1].(string)
+		if !ok {
+			return false, fmt.Errorf("invalid duration string: %+v", dur)
+		}
+
+		return Within(dt, dur)
+	},
+	Within,
+)
+
+var now = time.Now()
+
+func Within(dt time.Time, durstr string) (bool, error) {
+	dur, err := time.ParseDuration(durstr)
+
+	if err != nil {
+		return false, fmt.Errorf("invalid duration: %w", err)
+	}
+
+	return dt.After(now.Add(dur)), nil
+}
+
 func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, error) {
+	env["now"] = now
 	opts = append(opts, expr.Env(env),
 		atoi,
 		localtime,
 		utctime,
 		tztime,
+		within,
 	)
 
 	return expr.Compile(exp, opts...)
