@@ -2,13 +2,11 @@ package internal
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
-
-	jsoniter "github.com/json-iterator/go"
 )
 
-var jsonit = jsoniter.ConfigCompatibleWithStandardLibrary
 var _ = (RecordReader)(&JsonLReader{})
 
 type JsonLReader struct{}
@@ -25,7 +23,7 @@ func (j *JsonLReader) Read(r io.Reader) (chan Record, error) {
 			i++
 			raw := scanner.Text()
 			var jsonobj = make(map[string]any)
-			err := jsonit.Unmarshal([]byte(raw), &jsonobj)
+			err := json.Unmarshal([]byte(raw), &jsonobj)
 			if err != nil {
 				fmt.Printf("failed to unmarshal json: %q\n", err)
 				continue
