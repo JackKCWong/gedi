@@ -19,6 +19,22 @@ var atoi = expr.Function(
 	strconv.Atoi,
 )
 
+var toint = expr.Function(
+	"int",
+	func(params ...any) (any, error) {
+		return strconv.Atoi(params[0].(string))
+	},
+	strconv.Atoi,
+)
+
+var tofloat = expr.Function(
+	"float",
+	func(params ...any) (any, error) {
+		return strconv.ParseFloat(params[0].(string), 64)
+	},
+	new(func(string) float64),
+)
+
 var localtime = expr.Function(
 	"localtime",
 	func(params ...any) (any, error) {
@@ -85,6 +101,8 @@ func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, 
 	env["now"] = now
 	opts = append(opts, expr.Env(env),
 		atoi,
+		toint,
+		tofloat,
 		localtime,
 		utctime,
 		tztime,

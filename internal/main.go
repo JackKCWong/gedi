@@ -6,6 +6,7 @@ import (
 )
 
 type Record struct {
+	lineno int
 	raw    string
 	parsed any
 }

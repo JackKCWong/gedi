@@ -13,6 +13,10 @@ gedi -f examples/lines.txt 'atoi(x) % 2 == 0'
 
 Additional vars / functions:
 
+* `ix`: the current record number.
+
+* `x`: the current record. When `filetype` is `line`, it's the current line as `string`, when `filetype` is `csv`, it's the current row as `[]string`.
+
 * `now`: `time.Now()` at the start of the program, provided to avoid calling `time.Now()` repeatedly in large files.
 
 * `localtime(string)`: guess time from a given string as if it's a local time. e.g. assuming local is HTK, `"2023-01-01 00:00:00 WARN foobar" | localtime()` gives `2023-01-01 00:00:00 UTC+08:00`

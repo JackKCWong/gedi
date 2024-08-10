@@ -16,9 +16,12 @@ func (l LineReader) Read(r io.Reader) (chan Record, error) {
 	scanner.Split(bufio.ScanLines)
 	go func() {
 		defer close(lines)
+		i := 0
 		for scanner.Scan() {
+			i++
 			line := scanner.Text()
 			lines <- Record{
+				i,
 				line,
 				line,
 			}

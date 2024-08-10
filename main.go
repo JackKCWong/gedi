@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/JackKCWong/gedi/internal"
 	"github.com/spf13/cobra"
@@ -27,12 +28,19 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
-		var reader internal.RecordReader
 		filetype, err := cmd.Flags().GetString("type")
 		if err != nil {
 			return err
 		}
 
+		if filetype == "auto" {
+			if strings.HasSuffix(file, ".csv") {
+				filetype = "csv"
+			} else {
+				filetype = "line"
+			}
+		}
+		var reader internal.RecordReader
 		switch filetype {
 		case "line":
 			reader = internal.LineReader{}
@@ -43,13 +51,17 @@ var rootCmd = &cobra.Command{
 		}
 
 		g := internal.New(reader, internal.Filter{Expr: args[0]})
+		err = g.Run(input)
+		if err != nil {
+			fmt.Println(err)
+		}
 
-		return g.Run(input)
+		return nil
 	},
 }
 
 func init() {
-	rootCmd.Flags().StringP("type", "t", "line", "file type of the input file, can be line|csv")
+	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
 	// rootCmd.Flags().StringP("mode", "m", "filter", "operation mode, can be filter|map|reduce")
 }
