@@ -10,7 +10,7 @@ import (
 func TestReadLines(t *testing.T) {
 	Convey("it can read files line by line", t, func() {
 		g := Gedi{
-			reader: LineReader{},
+			reader: &LineReader{},
 			processor: Filter{
 				Expr: "atoi(x) > 10",
 			},
