@@ -34,6 +34,6 @@ Additional vars / functions:
 
 [x] supports csv
 
-[] supports jsonl
+[x] supports jsonl
 
-[] supports jsonarray
+[x] supports jsonarray

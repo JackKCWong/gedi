@@ -20,7 +20,7 @@ func (l *LineReader) Read(r io.Reader) (chan Record, error) {
 		for scanner.Scan() {
 			i++
 			line := scanner.Text()
-			lines <- Record{
+			lines <- &record{
 				i,
 				line,
 				line,

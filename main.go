@@ -36,6 +36,10 @@ var rootCmd = &cobra.Command{
 		if filetype == "auto" {
 			if strings.HasSuffix(file, ".csv") {
 				filetype = "csv"
+			} else if(strings.HasSuffix(file, ".jsonl")) {
+				filetype = "jsonl"
+			} else if(strings.HasSuffix(file, ".json")) {
+				filetype = "json"
 			} else {
 				filetype = "line"
 			}
@@ -48,6 +52,8 @@ var rootCmd = &cobra.Command{
 			reader = &internal.CsvReader{}
 		case "jsonl":
 			reader = &internal.JsonLReader{}
+		case "json":
+			reader = &internal.JsonReader{}
 		default:
 			return fmt.Errorf("unknown file type: %s", filetype)
 		}
@@ -63,7 +69,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv|jsonl")
+	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv|jsonl|json")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
 	// rootCmd.Flags().StringP("mode", "m", "filter", "operation mode, can be filter|map|reduce")
 }

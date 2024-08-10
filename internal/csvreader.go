@@ -27,7 +27,7 @@ func (c *CsvReader) Read(r io.Reader) (chan Record, error) {
 		var shift int64
 		var lineno int
 		for {
-			record, err := csvRd.Read()
+			rec, err := csvRd.Read()
 			if err == io.EOF {
 				break
 			}
@@ -39,10 +39,10 @@ func (c *CsvReader) Read(r io.Reader) (chan Record, error) {
 
 			raw := rawBuf.String()[lastOffset:csvRd.InputOffset()-shift]
 			lineno++
-			records <- Record{
+			records <- &record{
 				lineno: lineno,
 				raw:    strings.TrimRight(raw, "\r\n"),
-				parsed: record,
+				parsed: rec,
 			}
 
 			if lastOffset > BUF_SIZE {

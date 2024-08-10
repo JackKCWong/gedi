@@ -5,10 +5,10 @@ import (
 	"io"
 )
 
-type Record struct {
-	lineno int
-	raw    string
-	parsed any
+type Record interface {
+	LineNo() int
+	Raw() string
+	Parsed() any
 }
 
 type RecordReader interface {
@@ -47,4 +47,27 @@ func (g Gedi) Run(input io.Reader) error {
 	}
 
 	return nil
+}
+
+var _ = (Record)(&record{})
+
+type record struct {
+	lineno int
+	raw    string
+	parsed any
+}
+
+// LineNo implements Record.
+func (r *record) LineNo() int {
+	return r.lineno
+}
+
+// Parsed implements Record.
+func (r *record) Parsed() any {
+	return r.parsed
+}
+
+// Raw implements Record.
+func (r *record) Raw() string {
+	return r.raw
 }

@@ -16,8 +16,8 @@ type Filter struct {
 func (f Filter) Process(input <-chan Record) (chan string, error) {
 	r0 := <-input
 	env := map[string]any{
-		"ix": r0.lineno,
-		"x": r0.parsed,
+		"ix": r0.LineNo(),
+		"x":  r0.Parsed(),
 	}
 
 	exp, err := Compile(f.Expr, env)
@@ -27,14 +27,14 @@ func (f Filter) Process(input <-chan Record) (chan string, error) {
 
 	out := make(chan string)
 	consume := func(r Record) {
-		env["ix"] = r.lineno
-		env["x"] = r.parsed
+		env["ix"] = r.LineNo()
+		env["x"] = r.Parsed()
 		res, err := expr.Run(exp, env)
 		if err != nil {
 			out <- fmt.Sprintf("error in running expr: %q", err)
 		} else {
 			if b, ok := res.(bool); ok && b {
-				out <- r.raw
+				out <- r.Raw()
 			}
 		}
 	}

@@ -19,7 +19,8 @@ func TestFilter(t *testing.T) {
 		go func() {
 			defer close(x)
 			for i := 0; i < 10; i++ {
-				x <- Record{
+				x <- &record{
+					lineno: i,
 					raw:    strconv.Itoa(i),
 					parsed: strconv.Itoa(i),
 				}

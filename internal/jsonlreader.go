@@ -1,37 +1,41 @@
 package internal
 
 import (
-	"encoding/json"
+	"bufio"
 	"fmt"
 	"io"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
-var _ = (RecordReader)(JsonLReader{})
+var jsonit = jsoniter.ConfigCompatibleWithStandardLibrary
+var _ = (RecordReader)(&JsonLReader{})
 
-type JsonLReader struct {
-	reader LineReader
-}
+type JsonLReader struct{}
 
 // Read implements RecordReader and reads a jsonl file
-func (j JsonLReader) Read(r io.Reader) (chan Record, error) {
+func (j *JsonLReader) Read(r io.Reader) (chan Record, error) {
 	var out = make(chan Record)
-	x, err := j.reader.Read(r)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read jsonl: %w", err)
-	}
-
 	go func() {
 		defer close(out)
-		for r := range x {
+		scanner := bufio.NewScanner(r)
+		scanner.Split(bufio.ScanLines)
+		i := 0
+		for scanner.Scan() {
+			i++
+			raw := scanner.Text()
 			var jsonobj = make(map[string]any)
-			err := json.Unmarshal([]byte(r.raw), &jsonobj)
+			err := jsonit.Unmarshal([]byte(raw), &jsonobj)
 			if err != nil {
 				fmt.Printf("failed to unmarshal json: %q\n", err)
 				continue
 			}
 
-			r.parsed = jsonobj
-			out <- r
+			out <- &record{
+				i,
+				raw,
+				jsonobj,
+			}
 		}
 	}()
 
