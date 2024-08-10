@@ -79,9 +79,18 @@ var now = time.Now()
 var within = expr.Function(
 	"within",
 	func(params ...any) (any, error) {
-		dt, ok := params[0].(time.Time)
-		if !ok {
-			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
+		var err error
+		var dt time.Time
+		switch arg := params[0].(type) {
+		case time.Time:
+			dt = arg
+		case string:
+			dt, err = dateparse.ParseAny(arg)
+			if err != nil {
+				return false, fmt.Errorf("failed to parse time: %w", err)
+			}
+		default:
+			return false, fmt.Errorf("expecting a time.Time or string but was: %T", params[0])
 		}
 
 		dur, ok := params[1].(time.Duration)
@@ -92,42 +101,69 @@ var within = expr.Function(
 		return dt.Compare(now.Add(dur)) >= 0, nil
 	},
 	new(func(time.Time, time.Duration) (bool, error)),
+	new(func(string, time.Duration) (bool, error)),
 )
+
+func parseTimes(params ...any) (time.Time, time.Time, error) {
+	var err error
+	var dt1, dt2 time.Time
+	switch dt := params[0].(type) {
+	case time.Time:
+		dt1 = dt
+	case string:
+		dt1, err = dateparse.ParseAny(dt)
+		if err != nil {
+			return time.Time{}, time.Time{}, fmt.Errorf("failed to parse time: %w", err)
+		}
+	default:
+		return time.Time{}, time.Time{}, fmt.Errorf("expecting a time.Time or string but was: %T", params[0])
+	}
+
+	switch dt := params[1].(type) {
+	case time.Time:
+		dt2 = dt
+	case string:
+		dt2, err = dateparse.ParseAny(dt)
+		if err != nil {
+			return time.Time{}, time.Time{}, fmt.Errorf("failed to parse time: %w", err)
+		}
+	default:
+		return time.Time{}, time.Time{}, fmt.Errorf("expecting a time.Time or string but was: %T", params[0])
+	}
+
+	return dt1, dt2, nil
+}
 
 var before = expr.Function(
 	"before",
 	func(params ...any) (any, error) {
-		dt1, ok := params[0].(time.Time)
-		if !ok {
-			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
-		}
-
-		dt2, ok := params[1].(time.Time)
-		if !ok {
-			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
+		dt1, dt2, err := parseTimes(params...)
+		if err != nil {
+			return false, err
 		}
 
 		return dt1.Compare(dt2) <= 0, nil
 	},
 	new(func(time.Time, time.Time) (bool, error)),
+	new(func(string, time.Time) (bool, error)),
+	new(func(time.Time, string) (bool, error)),
+	new(func(string, string) (bool, error)),
 )
 
 var after = expr.Function(
 	"after",
 	func(params ...any) (any, error) {
-		dt1, ok := params[0].(time.Time)
-		if !ok {
-			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
-		}
-
-		dt2, ok := params[1].(time.Time)
-		if !ok {
-			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
+		dt1, dt2, err := parseTimes(params...)
+		if err != nil {
+			return false, err
 		}
 
 		return dt1.Compare(dt2) >= 0, nil
 	},
 	new(func(time.Time, time.Time) (bool, error)),
+	new(func(string, time.Time) (bool, error)),
+	new(func(time.Time, string) (bool, error)),
+	new(func(string, string) (bool, error)),
 )
 
 func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, error) {
