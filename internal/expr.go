@@ -20,7 +20,7 @@ var atoi = expr.Function(
 )
 
 var toint = expr.Function(
-	"int",
+	"toint",
 	func(params ...any) (any, error) {
 		return strconv.Atoi(params[0].(string))
 	},
@@ -28,11 +28,19 @@ var toint = expr.Function(
 )
 
 var tofloat = expr.Function(
-	"float",
+	"tofloat",
 	func(params ...any) (any, error) {
 		return strconv.ParseFloat(params[0].(string), 64)
 	},
 	new(func(string) float64),
+)
+
+var tostr = expr.Function(
+	"tostr",
+	func(params ...any) (any, error) {
+		return fmt.Printf("%s", params[0])
+	},
+	new(func(any) string),
 )
 
 var localtime = expr.Function(
@@ -67,46 +75,80 @@ var tztime = expr.Function(
 	dateparse.ParseIn,
 )
 
+var now = time.Now()
 var within = expr.Function(
 	"within",
 	func(params ...any) (any, error) {
 		dt, ok := params[0].(time.Time)
 		if !ok {
-			return false, fmt.Errorf("expecting first parameter to be a time.Time but was: %T", params[0])
+			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
 		}
 
-		dur, ok := params[1].(string)
+		dur, ok := params[1].(time.Duration)
 		if !ok {
-			return false, fmt.Errorf("invalid duration string: %+v", dur)
+			return false, fmt.Errorf("expecting a time.Duration but was: %T", dur)
 		}
 
-		return Within(dt, dur)
+		return dt.Compare(now.Add(dur)) >= 0, nil
 	},
-	Within,
+	new(func(time.Time, time.Duration) (bool, error)),
 )
 
-var now = time.Now()
+var before = expr.Function(
+	"before",
+	func(params ...any) (any, error) {
+		dt1, ok := params[0].(time.Time)
+		if !ok {
+			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
+		}
 
-func Within(dt time.Time, durstr string) (bool, error) {
-	dur, err := time.ParseDuration(durstr)
+		dt2, ok := params[1].(time.Time)
+		if !ok {
+			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
+		}
 
-	if err != nil {
-		return false, fmt.Errorf("invalid duration: %w", err)
-	}
+		return dt1.Compare(dt2) <= 0, nil
+	},
+	new(func(time.Time, time.Time) (bool, error)),
+)
 
-	return dt.After(now.Add(dur)), nil
-}
+var after = expr.Function(
+	"after",
+	func(params ...any) (any, error) {
+		dt1, ok := params[0].(time.Time)
+		if !ok {
+			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
+		}
+
+		dt2, ok := params[1].(time.Time)
+		if !ok {
+			return false, fmt.Errorf("expecting a time.Time but was: %T", params[0])
+		}
+
+		return dt1.Compare(dt2) >= 0, nil
+	},
+	new(func(time.Time, time.Time) (bool, error)),
+)
 
 func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, error) {
 	env["now"] = now
+	env["day"] = 24 * time.Hour
+	env["week"] = 7 * 24 * time.Hour
+	env["month"] = 30 * 24 * time.Hour
+	env["year"] = 365 * 24 * time.Hour
+	env["now"] = now
+
 	opts = append(opts, expr.Env(env),
 		atoi,
 		toint,
 		tofloat,
+		tostr,
 		localtime,
 		utctime,
 		tztime,
 		within,
+		before,
+		after,
 	)
 
 	return expr.Compile(exp, opts...)

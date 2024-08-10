@@ -2,49 +2,21 @@ package internal
 
 import (
 	"testing"
-	"time"
+
+	"github.com/araddon/dateparse"
+	"github.com/expr-lang/expr"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestWithin(t *testing.T) {
-	tests := []struct {
-		dt      time.Time
-		durstr  string
-		want    bool
-		wantErr bool
-	}{
-		{
-			dt:      time.Now(),
-			durstr:  "-1h",
-			want:    true,
-			wantErr: false,
-		},
-		{
-			dt:      time.Now().Add(-2 * time.Hour),
-			durstr:  "-1h",
-			want:    false,
-			wantErr: false,
-		},
-		{
-			dt:      time.Now().Add(-2 * time.Hour),
-			durstr:  "-3h",
-			want:    true,
-			wantErr: false,
-		},
-		{
-			dt:      time.Now(),
-			durstr:  "invalid_duration",
-			want:    false,
-			wantErr: true,
-		},
-	}
+	Convey("within equals to onOrAfter", t, func() {
+		now = dateparse.MustParse("2024-08-10")
+		env := make(map[string]any)
+		p, err := Compile(`date("2024-08-09") | within(-1 * day)`, env)
+		So(err, ShouldBeNil)
 
-	for _, tt := range tests {
-		got, err := Within(tt.dt, tt.durstr)
-		if (err != nil) != tt.wantErr {
-			t.Errorf("Within(%v, %v) error = %v, wantErr %v", tt.dt, tt.durstr, err, tt.wantErr)
-		}
-		if got != tt.want {
-			t.Errorf("Within(%v, %v) = %v, want %v", tt.dt, tt.durstr, got, tt.want)
-		}
-	}
+		r, err := expr.Run(p, env)
+		So(err, ShouldBeNil)
+		So(r, ShouldBeTrue)
+	})
 }
