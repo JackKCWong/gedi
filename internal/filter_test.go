@@ -12,7 +12,8 @@ import (
 func TestFilter(t *testing.T) {
 	Convey("filter can print out lines that matches the expr", t, func() {
 		f := Filter{
-			"atoi(x) % 2 == 0",
+			Expr: "atoi(x) % 2 == 0",
+			Parallel: 4,
 		}
 
 		x := make(chan Record)
