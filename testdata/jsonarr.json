@@ -1,10 +1,18 @@
 [
     {
         "id": 1,
-        "value": "hello"
+        "value": "hello",
+        "nested": {
+            "id": 1,
+            "value": "hello"
+        }
     },
     {
         "id": 2,
-        "value": "world"
+        "value": "world",
+        "nested": {
+            "id": 2,
+            "value": "world"
+        }
     }
 ]
