@@ -36,15 +36,14 @@ var rootCmd = &cobra.Command{
 		if filetype == "auto" {
 			if strings.HasSuffix(file, ".csv") {
 				filetype = "csv"
-			} else if strings.HasSuffix(file, ".jsonl") {
+			} else if(strings.HasSuffix(file, ".jsonl")) {
 				filetype = "jsonl"
-			} else if strings.HasSuffix(file, ".json") {
+			} else if(strings.HasSuffix(file, ".json")) {
 				filetype = "json"
 			} else {
 				filetype = "line"
 			}
 		}
-
 		var reader internal.RecordReader
 		switch filetype {
 		case "line":
@@ -59,12 +58,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("unknown file type: %s", filetype)
 		}
 
-		parallel, _ := cmd.Flags().GetInt("parallel")
-		g := internal.New(reader, internal.Filter{
-			Expr:     args[0],
-			Parallel: parallel,
-		})
-
+		g := internal.New(reader, internal.Filter{Expr: args[0]})
 		err = g.Run(input)
 		if err != nil {
 			fmt.Println(err)
@@ -77,7 +71,6 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv|jsonl|json")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
-	rootCmd.Flags().IntP("parallel", "p", 1, "number of parallelism")
 	// rootCmd.Flags().StringP("mode", "m", "filter", "operation mode, can be filter|map|reduce")
 }
 
