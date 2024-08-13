@@ -69,6 +69,8 @@ var rootCmd = &cobra.Command{
 			process = internal.Filter{Expr: args[0]}
 		case "map":
 			process = internal.Mapper{Expr: args[0]}
+		case "reduce":
+			process = internal.Reducer{Expr: args[0]}
 		default:
 			return fmt.Errorf("unknown mode: %s", mode)
 		}
