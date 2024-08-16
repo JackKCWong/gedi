@@ -18,9 +18,7 @@ func (r Reducer) Process(input <-chan Record) (chan string, error) {
 	out := make(chan string)
 	go func() {
 		defer close(out)
-		x := csp.Reduce(input, func(agg []any, r Record) []any{
-			return append(agg, r.Parsed())
-		})
+		x := csp.Collect(input)
 
 		env := map[string]any{
 			"x": x,
