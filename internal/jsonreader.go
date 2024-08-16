@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 )
 
 type JsonReader struct{}
@@ -19,32 +20,47 @@ var _ = (Record)(&jsonrecord{})
 func (j *JsonReader) Read(r io.Reader) (chan Record, error) {
 	records := make(chan Record)
 	dec := json.NewDecoder(r)
-	t, err := dec.Token()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read json array: %w", err)
-	}
-
-	if t.(json.Delim) != '[' {
-		return nil, fmt.Errorf("expected json array, got %q", t)
-	}
 
 	go func() {
 		defer close(records)
 		i := 0
-		for dec.More() {
-			i++
-			var obj map[string]any
-			err := dec.Decode(&obj)
-			if err != nil {
-				fmt.Printf("failed to decode json: %q\n", err)
-				continue
+		xname := ""
+		for {
+			for { 
+				// read until we find a '['
+				t, err := dec.Token()
+				if err == io.EOF {
+					return
+				}
+				if err != nil {
+					fmt.Fprintln(os.Stderr, fmt.Errorf("failed to read json: %w", err))
+					return
+				}
+				if name, ok := t.(string); ok {
+					xname = name
+				}
+				if delim, ok := t.(json.Delim); ok && delim == '[' {
+					break
+				}
 			}
-			records <- &jsonrecord{
-				lineno: i,
-				parsed: map[string]any{
-					"ix": i,
-					"x":  obj,
-				},
+
+			for dec.More() {
+				// read array elements
+				i++
+				var obj map[string]any
+				err := dec.Decode(&obj)
+				if err != nil {
+					fmt.Printf("failed to decode json: %q\n", err)
+					continue
+				}
+				records <- &jsonrecord{
+					lineno: i,
+					parsed: map[string]any{
+						"ix":    i,
+						"x":     obj,
+						"xname": xname,
+					},
+				}
 			}
 		}
 	}()
