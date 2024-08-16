@@ -80,7 +80,7 @@ func (j *jsonrecord) Parsed() map[string]any {
 
 // String implements Record.
 func (j *jsonrecord) String() string {
-	str, err := json.Marshal(j.parsed)
+	str, err := json.Marshal(j.parsed["x"])
 	if err != nil {
 		panic(err)
 	}

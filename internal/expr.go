@@ -166,7 +166,8 @@ var after = expr.Function(
 	new(func(string, string) (bool, error)),
 )
 
-func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, error) {
+func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Program, error) {
+	env := make(map[string]any)
 	env["now"] = now
 	env["msec"] = time.Millisecond
 	env["sec"] = time.Second
@@ -177,6 +178,10 @@ func Compile(exp string, env map[string]any, opts ...expr.Option) (*vm.Program, 
 	env["month"] = 30 * 24 * time.Hour
 	env["year"] = 365 * 24 * time.Hour
 	env["now"] = now
+
+	for k, v := range params {
+		env[k] = v
+	}
 
 	opts = append(opts, expr.Env(env),
 		atoi,
