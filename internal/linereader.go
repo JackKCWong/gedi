@@ -23,7 +23,10 @@ func (l *LineReader) Read(r io.Reader) (chan Record, error) {
 			lines <- &record{
 				i,
 				line,
-				line,
+				map[string]any{
+					"ix": i,
+					"x":  line,
+				},
 			}
 		}
 	}()

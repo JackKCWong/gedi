@@ -16,21 +16,14 @@ type Mapper struct {
 // Process implements Processor. It prints out the result of the Expr
 func (m Mapper) Process(input <-chan Record) (chan string, error) {
 	r0 := <-input
-	env := map[string]any{
-		"ix": r0.LineNo(),
-		"x":  r0.Parsed(),
-	}
-
-	exp, err := Compile(m.Expr, env)
+	exp, err := Compile(m.Expr, r0.Parsed())
 	if err != nil {
 		return nil, fmt.Errorf("failed to compile expr: %w", err)
 	}
 
 	out := make(chan string)
 	consume := func(r Record) {
-		env["ix"] = r.LineNo()
-		env["x"] = r.Parsed()
-		result, err := expr.Run(exp, env)
+		result, err := expr.Run(exp, r.Parsed())
 		if err != nil {
 			out <- fmt.Sprintf("error in running expr: %q", err)
 		} else {

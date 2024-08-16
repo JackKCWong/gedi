@@ -7,8 +7,8 @@ import (
 
 type Record interface {
 	LineNo() int
-	Raw() string
-	Parsed() any
+	String() string
+	Parsed() map[string]any
 }
 
 type RecordReader interface {
@@ -54,7 +54,7 @@ var _ = (Record)(&record{})
 type record struct {
 	lineno int
 	raw    string
-	parsed any
+	parsed map[string]any
 }
 
 // LineNo implements Record.
@@ -63,11 +63,11 @@ func (r *record) LineNo() int {
 }
 
 // Parsed implements Record.
-func (r *record) Parsed() any {
+func (r *record) Parsed() map[string]any{
 	return r.parsed
 }
 
-// Raw implements Record.
-func (r *record) Raw() string {
+// String implements Record.
+func (r *record) String() string {
 	return r.raw
 }

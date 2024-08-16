@@ -17,12 +17,12 @@ func TestJsonLReader(t *testing.T) {
 
 		So(err, ShouldBeNil)
 		rec := next(rows).(Record)
-		obj := rec.Parsed().(map[string]any)
+		obj := rec.Parsed()["x"].(map[string]any)
 		So(obj["id"], ShouldEqual, 1)
 		So(obj["value"], ShouldEqual, "hello")
 
 		rec = next(rows).(Record)
-		obj = rec.Parsed().(map[string]any)
+		obj = rec.Parsed()["x"].(map[string]any)
 		So(obj["id"], ShouldEqual, 2)
 		So(obj["value"], ShouldEqual, "world")
 	})
@@ -39,12 +39,12 @@ func TestJsonReader(t *testing.T) {
 
 		So(err, ShouldBeNil)
 		rec := next(rows).(Record)
-		obj := rec.Parsed().(map[string]any)
+		obj := rec.Parsed()["x"].(map[string]any)
 		So(obj["id"], ShouldEqual, 1)
 		So(obj["value"], ShouldEqual, "hello")
 
 		rec = next(rows).(Record)
-		obj = rec.Parsed().(map[string]any)
+		obj = rec.Parsed()["x"].(map[string]any)
 		So(obj["id"], ShouldEqual, 2)
 		So(obj["value"], ShouldEqual, "world")
 	})

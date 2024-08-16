@@ -15,26 +15,19 @@ type Filter struct {
 // Process implements Processor. It prints out the original record if the expr eval to true
 func (f Filter) Process(input <-chan Record) (chan string, error) {
 	r0 := <-input
-	env := map[string]any{
-		"ix": r0.LineNo(),
-		"x":  r0.Parsed(),
-	}
-
-	exp, err := Compile(f.Expr, env)
+	exp, err := Compile(f.Expr, r0.Parsed())
 	if err != nil {
 		return nil, fmt.Errorf("failed to compile expr: %w", err)
 	}
 
 	out := make(chan string)
 	consume := func(r Record) {
-		env["ix"] = r.LineNo()
-		env["x"] = r.Parsed()
-		res, err := expr.Run(exp, env)
+		res, err := expr.Run(exp, r.Parsed())
 		if err != nil {
 			out <- fmt.Sprintf("error in running expr: %q", err)
 		} else {
 			if b, ok := res.(bool); ok && b {
-				out <- r.Raw()
+				out <- r.String()
 			}
 		}
 	}

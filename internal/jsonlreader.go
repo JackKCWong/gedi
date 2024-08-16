@@ -22,8 +22,8 @@ func (j *JsonLReader) Read(r io.Reader) (chan Record, error) {
 		for scanner.Scan() {
 			i++
 			raw := scanner.Text()
-			var jsonobj = make(map[string]any)
-			err := json.Unmarshal([]byte(raw), &jsonobj)
+			var obj = make(map[string]any)
+			err := json.Unmarshal([]byte(raw), &obj)
 			if err != nil {
 				fmt.Printf("failed to unmarshal json: %q\n", err)
 				continue
@@ -32,7 +32,10 @@ func (j *JsonLReader) Read(r io.Reader) (chan Record, error) {
 			out <- &record{
 				i,
 				raw,
-				jsonobj,
+				map[string]any{
+					"ix": i,
+					"x":  obj,
+				},
 			}
 		}
 	}()

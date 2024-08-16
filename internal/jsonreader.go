@@ -41,7 +41,10 @@ func (j *JsonReader) Read(r io.Reader) (chan Record, error) {
 			}
 			records <- &jsonrecord{
 				lineno: i,
-				parsed: obj,
+				parsed: map[string]any{
+					"ix": i,
+					"x":  obj,
+				},
 			}
 		}
 	}()
@@ -55,12 +58,12 @@ func (j *jsonrecord) LineNo() int {
 }
 
 // Parsed implements Record.
-func (j *jsonrecord) Parsed() any {
+func (j *jsonrecord) Parsed() map[string]any {
 	return j.parsed
 }
 
-// Raw implements Record.
-func (j *jsonrecord) Raw() string {
+// String implements Record.
+func (j *jsonrecord) String() string {
 	str, err := json.Marshal(j.parsed)
 	if err != nil {
 		panic(err)

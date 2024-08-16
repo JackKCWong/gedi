@@ -16,13 +16,13 @@ func TestCsvReader(t *testing.T) {
 
 		So(err, ShouldBeNil)
 		rec := next(rows).(Record)
-		So(rec.Raw(), ShouldEqual, `1,"hello,world"`)
-		So(rec.Parsed().([]string)[0], ShouldEqual, "1")
-		So(rec.Parsed().([]string)[1], ShouldEqual, "hello,world")
+		So(rec.String(), ShouldEqual, `1,"hello,world"`)
+		So(rec.Parsed()["x"].([]string)[0], ShouldEqual, "1")
+		So(rec.Parsed()["x"].([]string)[1], ShouldEqual, "hello,world")
 
 		rec = next(rows).(Record)
-		So(rec.Raw(), ShouldEqual, `2,hi`)
-		So(rec.Parsed().([]string)[0], ShouldEqual, "2")
-		So(rec.Parsed().([]string)[1], ShouldEqual, "hi")
+		So(rec.String(), ShouldEqual, `2,hi`)
+		So(rec.Parsed()["x"].([]string)[0], ShouldEqual, "2")
+		So(rec.Parsed()["x"].([]string)[1], ShouldEqual, "hi")
 	})
 }

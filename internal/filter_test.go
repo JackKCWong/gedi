@@ -22,7 +22,9 @@ func TestFilter(t *testing.T) {
 				x <- &record{
 					lineno: i,
 					raw:    strconv.Itoa(i),
-					parsed: strconv.Itoa(i),
+					parsed: map[string]any{
+						"x": strconv.Itoa(i),
+					},
 				}
 			}
 		}()
