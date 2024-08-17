@@ -24,9 +24,9 @@ func (j *JsonReader) Read(r io.Reader) (chan Record, error) {
 	go func() {
 		defer close(records)
 		i := 0
-		xname := ""
+		kx := ""
 		for {
-			for { 
+			for {
 				// read until we find a '['
 				t, err := dec.Token()
 				if err == io.EOF {
@@ -37,7 +37,7 @@ func (j *JsonReader) Read(r io.Reader) (chan Record, error) {
 					return
 				}
 				if name, ok := t.(string); ok {
-					xname = name
+					kx = name
 				}
 				if delim, ok := t.(json.Delim); ok && delim == '[' {
 					break
@@ -56,9 +56,9 @@ func (j *JsonReader) Read(r io.Reader) (chan Record, error) {
 				records <- &jsonrecord{
 					lineno: i,
 					parsed: map[string]any{
-						"ix":    i,
-						"x":     obj,
-						"xname": xname,
+						"ix": i,
+						"x":  obj,
+						"kx": kx,
 					},
 				}
 			}
