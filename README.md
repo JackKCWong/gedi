@@ -51,6 +51,8 @@ Additional vars / functions:
 
 * `gt`, `lt`, `ge`, `le`: check if the 1st arg(ints, floats, `time.Time`, `time.Duration`) is greater than, less than, greater than or equal to, or less than or equal to the 2nd arg (of the same type).
 
+* `grep(input, regex [, group])`:  grep matches from `input`. If the `regex` has groups, the `group` is the index of the group to return.  
+
 
 # TODOs
 

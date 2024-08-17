@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -192,6 +193,82 @@ var after = expr.Function(
 	new(func(string, string) (bool, error)),
 )
 
+var grep = expr.Function(
+	"grep",
+	func(params ...any) (any, error) {
+		if len(params) != 2 && len(params) != 3 {
+			return "", fmt.Errorf("expecting 2 or 3 parameters but was: %d", len(params))
+		}
+
+		input, ok := params[0].(string)
+		if !ok {
+			return "", fmt.Errorf("expecting a string but was: %T", params[0])
+		}
+
+		rex, ok := params[1].(string)
+		if !ok {
+			return "", fmt.Errorf("expecting a string but was: %T", params[1])
+		}
+
+		re, err := regexp.Compile(rex)
+		if err != nil {
+			return "", fmt.Errorf("failed to compile regex: %w", err)
+		}
+
+		if len(params) == 3 {
+			if i, ok := params[2].(int); ok {
+				return re.FindStringSubmatch(input)[i], nil
+			} else {
+				return "", fmt.Errorf("expecting an int but was: %T", params[2])
+			}
+		} else {
+			return re.FindString(input), nil
+		}
+	},
+	new(func(string, string) (string, error)),
+	new(func(string, string, int) (string, error)),
+)
+
+var empty = expr.Function(
+	"empty",
+	func(params ...any) (any, error) {
+		if len(params) != 1 {
+			return false, fmt.Errorf("expecting 1 parameter but was: %d", len(params))
+		}
+
+		if params[0] == nil {
+			return true, nil
+		}
+
+		if input, ok := params[0].(string); ok {
+			return input == "", nil
+		}
+
+		return false, nil
+	},
+	new(func(any) bool),
+)
+
+var notempty = expr.Function(
+	"notempty",
+	func(params ...any) (any, error) {
+		if len(params) != 1 {
+			return false, fmt.Errorf("expecting 1 parameter but was: %d", len(params))
+		}
+
+		if params[0] != nil {
+			return true, nil
+		}
+
+		if input, ok := params[0].(string); ok {
+			return input != "", nil
+		}
+
+		return false, nil
+	},
+	new(func(any) bool),
+)
+
 var env = map[string]any{
 	"ms":    time.Millisecond,
 	"sec":   time.Second,
@@ -233,6 +310,9 @@ func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Progra
 		greaterOrEqual,
 		lessThan,
 		lessOrEqual,
+		grep,
+		empty,
+		notempty,
 	)
 
 	return expr.Compile(exp, opts...)
