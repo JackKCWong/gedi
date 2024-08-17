@@ -47,7 +47,7 @@ func (j *JsonReader) Read(r io.Reader) (chan Record, error) {
 			for dec.More() {
 				// read array elements
 				i++
-				var obj map[string]any
+				var obj any
 				err := dec.Decode(&obj)
 				if err != nil {
 					fmt.Printf("failed to decode json: %q\n", err)

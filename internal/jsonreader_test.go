@@ -88,4 +88,27 @@ func TestJsonReader(t *testing.T) {
 		So(obj["id"], ShouldEqual, 4)
 		So(obj["value"], ShouldEqual, "see you")
 	})
+	Convey("json reader can read primitive array", t, func() {
+		jsonArrayContent := `{ 
+				"y": [
+					1, "2", 3.0, true
+				]
+			}`
+		reader := JsonReader{}
+		rows, err := reader.Read(bytes.NewReader([]byte(jsonArrayContent)))
+
+		So(err, ShouldBeNil)
+
+		rec := next(rows).(Record)
+		So(rec.Parsed()["x"].(float64), ShouldAlmostEqual, 1)
+
+		rec = next(rows).(Record)
+		So(rec.Parsed()["x"].(string), ShouldEqual, "2")
+
+		rec = next(rows).(Record)
+		So(rec.Parsed()["x"].(float64), ShouldAlmostEqual, 3.0)
+
+		rec = next(rows).(Record)
+		So(rec.Parsed()["x"].(bool), ShouldBeTrue)
+	})
 }
