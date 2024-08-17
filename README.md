@@ -17,9 +17,11 @@ Additional vars / functions:
 
 * `x`: the current record. When `filetype` is `line`, it's the current line as `string`, when `filetype` is `csv`, it's the current row as `[]string`.
 
+* `kx`: if `x` comes from an array of a json field, `kx` is the name of the field. e.g. for `{"k": [1,2,3]}`, `kx` would be `k`.
+
 * `now`: `time.Now()` at the start of the program, provided to avoid calling `time.Now()` repeatedly in large files.
 
-* `msec`: 1 `time.Millsecond`
+* `ms`: 1 `time.Millsecond`
 
 * `sec`: 1 `time.Second`
 

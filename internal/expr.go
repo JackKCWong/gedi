@@ -193,6 +193,40 @@ var after = expr.Function(
 	new(func(string, string) (bool, error)),
 )
 
+var between = expr.Function(
+	"between",
+	func(params ...any) (any, error) {
+		parse := func(input any) (time.Time, error) {
+			switch dt := input.(type) {
+			case time.Time:
+				return dt, nil
+			case string:
+				return dateparse.ParseAny(dt)
+			default:
+				return time.Time{}, fmt.Errorf("expecting a time.Time or string but was: %T", params[0])
+			}
+		}
+
+		dt, err := parse(params[0])
+		if err != nil {
+			return false, err
+		}
+
+		start, err := parse(params[1])
+		if err != nil {
+			return false, err
+		}
+
+		end, err := parse(params[2])
+		if err != nil {
+			return false, err
+		}
+
+		return dt.Compare(start) >= 0 && dt.Compare(end) < 0, nil
+	},
+	new(func(any, any, any) (bool, error)),
+)
+
 var grep = expr.Function(
 	"grep",
 	func(params ...any) (any, error) {
@@ -313,6 +347,7 @@ func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Progra
 		grep,
 		empty,
 		notempty,
+		between,
 	)
 
 	return expr.Compile(exp, opts...)
