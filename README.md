@@ -41,11 +41,15 @@ Additional vars / functions:
 
 * `tztime(string, string)`: guess time from a given string as if it's a given timezone time. e.g. `"2023-01-01 00:00:00 WARN foobar" | tztime("UTC+8")` gives `2023-01-01 00:00:00 UTC+08:00`
 
+* `unixtime(int64)`: converts a given unix timestamp in milliseconds, seconds, microseconds to `time.Time`.
+
 * `within(time.Time|string, time.Time|string)`: checks if a given time is within a given duration comapred to `now`. e.g. find log lines that are within the last 24 hours: `x[0:20] | localtime() | within("-24h")`
 
 * `after(time.Time|string, time.Time|string)`: checks if the 1st time on or after the 2nd time. 
 
 * `before(time.Time|string, time.Time|string)`: checks if the 1st time on or before the 2nd time. 
+
+* `gt`, `lt`, `ge`, `le`: check if the 1st arg(ints, floats, `time.Time`, `time.Duration`) is greater than, less than, greater than or equal to, or less than or equal to the 2nd arg (of the same type).
 
 
 # TODOs

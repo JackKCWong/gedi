@@ -2,8 +2,6 @@ package internal
 
 import (
 	"fmt"
-
-	"github.com/expr-lang/expr"
 )
 
 var _ = (RecordProcessor)(Filter{})
@@ -22,7 +20,7 @@ func (f Filter) Process(input <-chan Record) (chan string, error) {
 
 	out := make(chan string)
 	consume := func(r Record) {
-		res, err := expr.Run(exp, r.Parsed())
+		res, err := RunExpr(exp, r.Parsed())
 		if err != nil {
 			out <- fmt.Sprintf("error in running expr: %q", err)
 		} else {

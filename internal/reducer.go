@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	csp "github.com/JackKCWong/chansport"
-	"github.com/expr-lang/expr"
 )
 
 var _ = (RecordProcessor)(Reducer{})
@@ -30,7 +29,7 @@ func (r Reducer) Process(input <-chan Record) (chan string, error) {
 			return
 		}
 
-		res, err := expr.Run(exp, env)
+		res, err := RunExpr(exp, env)
 		if err != nil {
 			out <- fmt.Sprintf("error in running expr: %q", err)
 		} else {

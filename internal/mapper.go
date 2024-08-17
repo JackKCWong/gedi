@@ -3,8 +3,6 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/expr-lang/expr"
 )
 
 var _ = (RecordProcessor)(Mapper{})
@@ -23,7 +21,7 @@ func (m Mapper) Process(input <-chan Record) (chan string, error) {
 
 	out := make(chan string)
 	consume := func(r Record) {
-		result, err := expr.Run(exp, r.Parsed())
+		result, err := RunExpr(exp, r.Parsed())
 		if err != nil {
 			out <- fmt.Sprintf("error in running expr: %q", err)
 		} else {

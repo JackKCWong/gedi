@@ -27,6 +27,14 @@ var toint = expr.Function(
 	strconv.Atoi,
 )
 
+var toint64 = expr.Function(
+	"toint64",
+	func(params ...any) (any, error) {
+		return strconv.ParseInt(params[0].(string), 10, 64)
+	},
+	strconv.Atoi,
+)
+
 var tofloat = expr.Function(
 	"tofloat",
 	func(params ...any) (any, error) {
@@ -56,7 +64,7 @@ var utctime = expr.Function(
 	func(params ...any) (any, error) {
 		return dateparse.ParseIn(params[0].(string), time.UTC)
 	},
-	dateparse.ParseIn,
+	dateparse.ParseLocal,
 )
 
 var tztime = expr.Function(
@@ -73,6 +81,24 @@ var tztime = expr.Function(
 		return dateparse.ParseIn(params[0].(string), tz)
 	},
 	dateparse.ParseIn,
+)
+
+var unixtime = expr.Function(
+	"unixtime",
+	func(params ...any) (any, error) {
+		if t, ok := params[0].(int64); ok {
+			return time.UnixMilli(t), nil
+		} else {
+			t, err := strconv.ParseInt(params[0].(string), 10, 64)
+			if err != nil {
+				return time.Time{}, fmt.Errorf("failed to parse time: %w", err)
+			}
+
+			return time.UnixMilli(t), nil
+		}
+	},
+	new(func(int64) time.Time),
+	new(func(string) time.Time),
 )
 
 var now = time.Now()
@@ -166,34 +192,47 @@ var after = expr.Function(
 	new(func(string, string) (bool, error)),
 )
 
-func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Program, error) {
-	env := make(map[string]any)
-	env["now"] = now
-	env["msec"] = time.Millisecond
-	env["sec"] = time.Second
-	env["min"] = time.Minute
-	env["hour"] = time.Hour
-	env["day"] = 24 * time.Hour
-	env["week"] = 7 * 24 * time.Hour
-	env["month"] = 30 * 24 * time.Hour
-	env["year"] = 365 * 24 * time.Hour
-	env["now"] = now
+var env = map[string]any{
+	"ms":    time.Millisecond,
+	"sec":   time.Second,
+	"min":   time.Minute,
+	"hour":  time.Hour,
+	"day":   24 * time.Hour,
+	"week":  7 * 24 * time.Hour,
+	"month": 30 * 24 * time.Hour,
+	"year":  365 * 24 * time.Hour,
+}
 
-	for k, v := range params {
-		env[k] = v
+func enrich(params map[string]any) {
+	for k, v := range env {
+		params[k] = v
 	}
+}
 
-	opts = append(opts, expr.Env(env),
+func RunExpr(exp *vm.Program, params map[string]any) (any, error) {
+	enrich(params)
+	return expr.Run(exp, params)
+}
+
+func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Program, error) {
+	enrich(params)
+	opts = append(opts, expr.Env(params),
 		atoi,
 		toint,
+		toint64,
 		tofloat,
 		tostr,
+		unixtime,
 		localtime,
 		utctime,
 		tztime,
 		within,
 		before,
 		after,
+		greaterThan,
+		greaterOrEqual,
+		lessThan,
+		lessOrEqual,
 	)
 
 	return expr.Compile(exp, opts...)
