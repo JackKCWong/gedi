@@ -327,12 +327,8 @@ func RunExpr(exp *vm.Program, params map[string]any) (any, error) {
 
 func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Program, error) {
 	enrich(params)
-	opts = append(opts, expr.Env(params),
-		atoi,
-		toint,
-		toint64,
-		tofloat,
-		tostr,
+	opts = append(opts,
+		expr.Env(env),
 		unixtime,
 		localtime,
 		utctime,
@@ -348,6 +344,7 @@ func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Progra
 		empty,
 		notempty,
 		between,
+		expr.AllowUndefinedVariables(),
 	)
 
 	return expr.Compile(exp, opts...)

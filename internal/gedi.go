@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"io"
+	"reflect"
 )
 
 type Record interface {
@@ -49,6 +50,19 @@ func (g Gedi) Run(input io.Reader) error {
 	return nil
 }
 
+func InferProcess(exp string) (RecordProcessor, error) {
+	vm, err := Compile(exp, map[string]any{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to compile expr: %w", err)
+	}
+
+	if vm.Node().Type().AssignableTo(reflect.TypeOf(true)) {
+		return Filter{Expr: exp}, nil
+	} else {
+		return Mapper{Expr: exp}, nil
+	}
+}
+
 var _ = (Record)(&record{})
 
 type record struct {
@@ -63,7 +77,7 @@ func (r *record) LineNo() int {
 }
 
 // Parsed implements Record.
-func (r *record) Parsed() map[string]any{
+func (r *record) Parsed() map[string]any {
 	return r.parsed
 }
 

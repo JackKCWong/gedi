@@ -65,10 +65,21 @@ var rootCmd = &cobra.Command{
 		}
 
 		switch mode {
+		case "auto":
+			process, err = internal.InferProcess(args[0])
+			if err != nil {
+				return err
+			}
+		case "f":
+			fallthrough
 		case "filter":
 			process = internal.Filter{Expr: args[0]}
+		case "m":
+			fallthrough
 		case "map":
 			process = internal.Mapper{Expr: args[0]}
+		case "r":
+			fallthrough
 		case "reduce":
 			process = internal.Reducer{Expr: args[0]}
 		default:
@@ -88,7 +99,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv|jsonl|json")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
-	rootCmd.Flags().StringP("mode", "m", "filter", "operation mode, can be filter|map")
+	rootCmd.Flags().StringP("mode", "m", "auto", "operation mode, can be auto|f[ilter]|m[ap]|r[educe]")
 }
 
 func main() {

@@ -98,6 +98,7 @@ var greaterThan = expr.Function(
 
 		return false, fmt.Errorf("uncomparable types: %T and %T", params[0], params[1])
 	},
+	new (func(any, any) (bool, error)),
 )
 
 

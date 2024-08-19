@@ -40,3 +40,15 @@ func TestCsvWithoutHeader(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 }
+
+func TestAutoMode(t *testing.T) {
+	Convey("it can infer filter|map mode from expression type", t, func() {
+		proc, err := InferProcess("int(x) | gt(10)")
+		So(err, ShouldBeNil)
+		So(proc, ShouldHaveSameTypeAs, Filter{})
+
+		proc, err = InferProcess("string(x[1])")
+		So(err, ShouldBeNil)
+		So(proc, ShouldHaveSameTypeAs, Mapper{})
+	})
+}
