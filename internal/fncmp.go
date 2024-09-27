@@ -192,6 +192,7 @@ var greaterOrEqual = expr.Function(
 
 		return false, fmt.Errorf("uncomparable types: %T and %T", params[0], params[1])
 	},
+	new (func(any, any) (bool, error)),
 )
 
 var lessThan = expr.Function(
@@ -284,6 +285,7 @@ var lessThan = expr.Function(
 
 		return false, fmt.Errorf("uncomparable types: %T and %T", params[0], params[1])
 	},
+	new (func(any, any) (bool, error)),
 )
 
 var lessOrEqual = expr.Function(
@@ -376,4 +378,5 @@ var lessOrEqual = expr.Function(
 
 		return false, fmt.Errorf("uncomparable types: %T and %T", params[0], params[1])
 	},
+	new (func(any, any) (bool, error)),
 )

@@ -50,5 +50,9 @@ func TestAutoMode(t *testing.T) {
 		proc, err = InferProcess("string(x[1])")
 		So(err, ShouldBeNil)
 		So(proc, ShouldHaveSameTypeAs, Mapper{})
+
+		proc, err = InferProcess("x | reduce(.Len > 10)")
+		So(err, ShouldBeNil)
+		So(proc, ShouldHaveSameTypeAs, Reducer{})
 	})
 }

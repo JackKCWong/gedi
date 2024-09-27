@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+
+	"github.com/expr-lang/expr/ast"
 )
 
 type Record interface {
@@ -50,17 +52,34 @@ func (g Gedi) Run(input io.Reader) error {
 	return nil
 }
 
+type detector struct {
+	isReducer bool
+}
+
+func (d *detector) Visit(node *ast.Node) {
+	if _, ok := (*node).(*ast.ClosureNode); ok {
+		d.isReducer = true
+	}
+}
+
 func InferProcess(exp string) (RecordProcessor, error) {
 	vm, err := Compile(exp, map[string]any{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to compile expr: %w", err)
 	}
 
-	if vm.Node().Type().AssignableTo(reflect.TypeOf(true)) {
-		return Filter{Expr: exp}, nil
-	} else {
-		return Mapper{Expr: exp}, nil
+	root := vm.Node()
+	d := &detector{}
+	ast.Walk(&root, d)
+	if d.isReducer {
+		return Reducer{Expr: exp}, nil
 	}
+
+	if root.Type().AssignableTo(reflect.TypeOf(true)) {
+		return Filter{Expr: exp}, nil
+	}
+
+	return Mapper{Expr: exp}, nil
 }
 
 var _ = (Record)(&record{})
