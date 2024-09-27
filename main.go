@@ -33,6 +33,11 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		maxNumOfFields, err := cmd.Flags().GetInt("max")
+		if err != nil {
+			return err
+		}
+
 		if filetype == "auto" {
 			if strings.HasSuffix(file, ".csv") {
 				filetype = "csv"
@@ -44,12 +49,15 @@ var rootCmd = &cobra.Command{
 				filetype = "line"
 			}
 		}
+
 		var reader internal.RecordReader
 		switch filetype {
 		case "line":
 			reader = &internal.LineReader{}
 		case "csv":
 			reader = &internal.CsvReader{}
+		case "ssv":
+			reader = &internal.SsvReader{MaxNumOfFields: maxNumOfFields}
 		case "jsonl":
 			reader = &internal.JsonLReader{}
 		case "json":
@@ -98,6 +106,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv|jsonl|json")
+	rootCmd.Flags().IntP("max", "n", -1, "max number of fields to read from each line, only applicable to ssv")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
 	rootCmd.Flags().StringP("mode", "m", "auto", "operation mode, can be auto|f[ilter]|m[ap]|r[educe]")
 }
