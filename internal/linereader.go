@@ -13,7 +13,6 @@ type LineReader struct{}
 func (l *LineReader) Read(r io.Reader) (chan Record, error) {
 	var lines = make(chan Record)
 	scanner := bufio.NewScanner(r)
-	scanner.Split(bufio.ScanLines)
 	go func() {
 		defer close(lines)
 		i := 0

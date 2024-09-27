@@ -94,6 +94,15 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("unknown mode: %s", mode)
 		}
 
+		skip, err := cmd.Flags().GetInt("skip")
+		if err != nil {
+			return err
+		}
+
+		if skip > 0 {
+			input = &internal.LineSkipper{NumOfLines: skip, Reader: input}
+		}
+
 		g := internal.New(reader, process)
 		err = g.Run(input)
 		if err != nil {
@@ -107,6 +116,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv|jsonl|json")
 	rootCmd.Flags().IntP("max", "n", -1, "max number of fields to read from each line, only applicable to ssv")
+	rootCmd.Flags().IntP("skip", "s", 0, "number of lines to skip")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
 	rootCmd.Flags().StringP("mode", "m", "auto", "operation mode, can be auto|f[ilter]|m[ap]|r[educe]")
 }

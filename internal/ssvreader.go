@@ -17,7 +17,6 @@ var re = regexp.MustCompile(`\s+`)
 
 func (r *SsvReader) Read(in io.Reader) (chan Record, error) {
 	scanner := bufio.NewScanner(in)
-	scanner.Split(bufio.ScanLines)
 
 	var out = make(chan Record)
 	go func() {

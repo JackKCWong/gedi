@@ -3,7 +3,7 @@ module github.com/JackKCWong/gedi
 go 1.21.0
 
 require (
-	github.com/JackKCWong/chansport v0.3.0
+	github.com/JackKCWong/chansport v0.3.2
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/expr-lang/expr v1.16.9
 	github.com/smartystreets/goconvey v1.8.1

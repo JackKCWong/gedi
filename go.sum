@@ -1,7 +1,5 @@
-github.com/JackKCWong/chansport v0.2.4 h1:yZ3PawTG1/g9Q8nX8U1u7QOb0MuCsNXmhCYaKYDN9yc=
-github.com/JackKCWong/chansport v0.2.4/go.mod h1:PeA2QvhmuNCi9+Fk++Fofah3THqlw0U324kg2UFjxqI=
-github.com/JackKCWong/chansport v0.3.0 h1:1Kj3R49k+AuFY6dy1j3XDfApSXf7+Igl8VIeiKOioPw=
-github.com/JackKCWong/chansport v0.3.0/go.mod h1:PeA2QvhmuNCi9+Fk++Fofah3THqlw0U324kg2UFjxqI=
+github.com/JackKCWong/chansport v0.3.2 h1:SoRnpTiJ9MXvxSr7zbL4H/8h/yDE+BYg4l+Pvn70+/w=
+github.com/JackKCWong/chansport v0.3.2/go.mod h1:PeA2QvhmuNCi9+Fk++Fofah3THqlw0U324kg2UFjxqI=
 github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de h1:FxWPpzIjnTlhPwqqXc4/vE0f7GvRjuAsbW+HOIe8KnA=
 github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de/go.mod h1:DCaWoUhZrYW9p1lxo/cm8EmUOOzAPSEZNGF2DK1dJgw=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=

@@ -17,7 +17,6 @@ func (j *JsonLReader) Read(r io.Reader) (chan Record, error) {
 	go func() {
 		defer close(out)
 		scanner := bufio.NewScanner(r)
-		scanner.Split(bufio.ScanLines)
 		i := 0
 		for scanner.Scan() {
 			i++
