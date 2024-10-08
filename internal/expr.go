@@ -131,6 +131,14 @@ var within = expr.Function(
 	new(func(string, time.Duration) (bool, error)),
 )
 
+var sprintf = expr.Function(
+	"sprintf",
+	func(params ...any) (any, error) {
+		return Sprintf(params[0], params[1].(string)), nil
+	},
+	Sprintf,
+)
+
 func parseTimes(params ...any) (time.Time, time.Time, error) {
 	var err error
 	var dt1, dt2 time.Time
@@ -344,6 +352,7 @@ func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Progra
 		empty,
 		notempty,
 		between,
+		sprintf,
 		expr.AllowUndefinedVariables(),
 	)
 
