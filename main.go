@@ -126,7 +126,7 @@ func init() {
 	rootCmd.Flags().StringP("type", "t", "auto", "file type of the input file, can be line|csv|jsonl|json")
 	rootCmd.Flags().IntP("max", "n", -1, "max number of fields to read from each line, only applicable to ssv")
 	rootCmd.Flags().IntP("skip", "s", 0, "number of lines to skip")
-	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
+	rootCmd.Flags().StringP("file", "i", "", "path to the input file. If not specified, stdin will be used.")
 	rootCmd.Flags().StringP("mode", "m", "auto", "operation mode, can be auto|f[ilter]|m[ap]|r[educe]")
 	rootCmd.Flags().BoolP("reduce", "r", false, "set operation mode to reduce")
 	// override the default help function to print README.md when user requests help

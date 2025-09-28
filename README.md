@@ -26,31 +26,31 @@ Additional vars / functions:
 - Filter lines: print only even numbers parsed from a file
 
 ```bash
-gedi -f testdata/lines.txt 'atoi(x) % 2 == 0'
+gedi -i testdata/lines.txt 'atoi(x) % 2 == 0'
 ```
 
 - Map CSV rows: output the second column of every CSV row (map mode)
 
 ```bash
-gedi -t csv -f testdata/HSI.csv -m map 'x[1]'
+gedi -t csv -i testdata/HSI.csv -m map 'x[1]'
 ```
 
 - Filter JSON Lines: select objects where `status == "OK"`
 
 ```bash
-gedi -t jsonl -f testdata/jsonl.jsonl 'x.status == "OK"'
+gedi -t jsonl -i testdata/jsonl.jsonl 'x.status == "OK"'
 ```
 
 - Reduce (aggregate): count records (shorthand `-r` sets reduce mode)
 
 ```bash
-gedi -f testdata/lines.txt -r 'acc + 1'
+gedi -i testdata/lines.txt -r 'acc + 1'
 ```
 
 - Skip header lines: skip the first line of an input before processing
 
 ```bash
-gedi -s 1 -t csv -f testdata/noheader.csv 'atoi(x[0]) > 100'
+gedi -s 1 -t csv -i testdata/noheader.csv 'atoi(x[0]) > 100'
 ```
 
 - SSV with max fields: read at most 3 fields per record (useful for space-separated files)
