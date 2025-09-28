@@ -10,7 +10,6 @@ type Filter struct {
 	Expr string
 }
 
-// Process implements Processor. It prints out the original record if the expr eval to true
 func (f Filter) Process(input <-chan Record) (chan string, error) {
 	r0 := <-input
 	exp, err := Compile(f.Expr, r0.Parsed())

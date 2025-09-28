@@ -57,8 +57,8 @@ type detector struct {
 }
 
 func (d *detector) Visit(node *ast.Node) {
-	if _, ok := (*node).(*ast.ClosureNode); ok {
-		d.isReducer = true
+	if n, ok := (*node).(*ast.BuiltinNode); ok {
+		d.isReducer = n.Name == "reduce"
 	}
 }
 

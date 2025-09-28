@@ -11,7 +11,6 @@ type Mapper struct {
 	Expr string
 }
 
-// Process implements Processor. It prints out the result of the Expr
 func (m Mapper) Process(input <-chan Record) (chan string, error) {
 	r0 := <-input
 	exp, err := Compile(m.Expr, r0.Parsed())
