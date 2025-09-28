@@ -139,6 +139,22 @@ var sprintf = expr.Function(
 	Sprintf,
 )
 
+var singleQuote = expr.Function(
+	"sq",
+	func(params ...any) (any, error) {
+		return SingleQuote(params[0]), nil
+	},
+	SingleQuote,
+)
+
+var doubleQuote = expr.Function(
+	"dq",
+	func(params ...any) (any, error) {
+		return DoubleQuote(params[0]), nil
+	},
+	DoubleQuote,
+)
+
 func parseTimes(params ...any) (time.Time, time.Time, error) {
 	var err error
 	var dt1, dt2 time.Time
@@ -353,6 +369,8 @@ func Compile(exp string, params map[string]any, opts ...expr.Option) (*vm.Progra
 		notempty,
 		between,
 		sprintf,
+		singleQuote,
+		doubleQuote,
 		expr.AllowUndefinedVariables(),
 	)
 

@@ -72,6 +72,10 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		if reduce, err := cmd.Flags().GetBool("reduce"); err == nil && reduce {
+			mode = "reduce"
+		}
+
 		switch mode {
 		case "auto":
 			process, err = internal.InferProcess(args[0])
@@ -119,6 +123,7 @@ func init() {
 	rootCmd.Flags().IntP("skip", "s", 0, "number of lines to skip")
 	rootCmd.Flags().StringP("file", "f", "", "path to the input file. If not specified, stdin will be used.")
 	rootCmd.Flags().StringP("mode", "m", "auto", "operation mode, can be auto|f[ilter]|m[ap]|r[educe]")
+	rootCmd.Flags().BoolP("reduce", "r", false, "set operation mode to reduce")
 }
 
 func main() {
