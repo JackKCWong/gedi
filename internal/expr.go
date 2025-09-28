@@ -314,12 +314,8 @@ var notempty = expr.Function(
 			return false, fmt.Errorf("expecting 1 parameter but was: %d", len(params))
 		}
 
-		if params[0] != nil {
-			return true, nil
-		}
-
 		if input, ok := params[0].(string); ok {
-			return input != "", nil
+			return strings.TrimSpace(input) != "", nil
 		}
 
 		return false, nil
