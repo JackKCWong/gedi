@@ -21,47 +21,100 @@ Additional vars / functions:
 
 * `now`: `time.Now()` at the start of the program, provided to avoid calling `time.Now()` repeatedly in large files.
 
-* `ms`: 1 `time.Millsecond`
+## examples
 
-* `sec`: 1 `time.Second`
+- Filter lines: print only even numbers parsed from a file
 
-* `min`: 1 `time.Minute`
+```bash
+gedi -f testdata/lines.txt 'atoi(x) % 2 == 0'
+```
 
-* `hour`: 1 `time.Hour`
+- Map CSV rows: output the second column of every CSV row (map mode)
 
-* `day`: 24 `time.Hour`
+```bash
+gedi -t csv -f testdata/HSI.csv -m map 'x[1]'
+```
 
-* `week`: 7 * 24 `time.Hour`
+- Filter JSON Lines: select objects where `status == "OK"`
 
-* `month`: 30 * 24 `time.Hour`
+```bash
+gedi -t jsonl -f testdata/jsonl.jsonl 'x.status == "OK"'
+```
 
-* `year`: 365 * 24 `time.Hour`
+- Reduce (aggregate): count records (shorthand `-r` sets reduce mode)
 
-* `localtime(string)`: guess time from a given string as if it's a local time. e.g. assuming local is HTK, `"2023-01-01 00:00:00 WARN foobar" | localtime()` gives `2023-01-01 00:00:00 UTC+08:00`
+```bash
+gedi -f testdata/lines.txt -r 'acc + 1'
+```
 
-* `utctime(string)`: guess time from a given string as if it's a UTC time. e.g. `"2023-01-01 00:00:00 WARN foobar" | utctime()` gives `2023-01-01 00:00:00 UTC+0000`
+- Skip header lines: skip the first line of an input before processing
 
-* `tztime(string, string)`: guess time from a given string as if it's a given timezone time. e.g. `"2023-01-01 00:00:00 WARN foobar" | tztime("UTC+8")` gives `2023-01-01 00:00:00 UTC+08:00`
+```bash
+gedi -s 1 -t csv -f testdata/noheader.csv 'atoi(x[0]) > 100'
+```
 
-* `unixtime(int64)`: converts a given unix timestamp in milliseconds, seconds, microseconds to `time.Time`.
+- SSV with max fields: read at most 3 fields per record (useful for space-separated files)
 
-* `within(time.Time|string, time.Time|string)`: checks if a given time is within a given duration comapred to `now`. e.g. find log lines that are within the last 24 hours: `x[0:20] | localtime() | within("-24h")`
+```bash
+gedi -t ssv -n 3 -f data.ssv 'x[2] == "foo"'
+```
 
-* `after(time.Time|string, time.Time|string)`: checks if the 1st time on or after the 2nd time. 
+Time helpers
 
-* `before(time.Time|string, time.Time|string)`: checks if the 1st time on or before the 2nd time. 
+The library provides helpers to parse and compare times. For example, to find log lines whose timestamp (first 20 chars) is within the last 24 hours:
 
-* `gt`, `lt`, `ge`, `le`: check if the 1st arg(ints, floats, `time.Time`, `time.Duration`) is greater than, less than, greater than or equal to, or less than or equal to the 2nd arg (of the same type).
+```bash
+gedi -f testdata/dates.log 'x[0:20] | localtime() | within("-24h")'
+```
 
-* `grep(input, regex [, group])`:  grep matches from `input`. If the `regex` has groups, the `group` is the index of the group to return.  
+Flags and modes
 
+- `-t`, `--type`: file type. One of `line`, `csv`, `ssv`, `jsonl`, `json`, or `auto` (default: `auto`, guesses from filename).
+- `-m`, `--mode`: mode of operation. `auto` (infer), `filter` (default), `map`, `reduce`.
+- `-r`, `--reduce`: shortcut to set reduce mode.
+- `-s`, `--skip`: skip N lines from start of input.
+- `-n`, `--max`: for `ssv` reader, maximum number of fields per record.
 
-# TODOs
+Common variables and helpers available in expressions
 
-[x] supports line by line files
+- `ix`: current record index (0-based).
+- `x`: current record (type depends on file type).
+- `kx`: when iterating over a JSON field that is an array, `kx` is the key name for the items.
+- `now`: program start time (useful for relative comparisons).
+- Duration constants: `ms`, `sec`, `min`, `hour`, `day`, `week`, `month`, `year`.
 
-[x] supports csv
+Useful functions
 
-[x] supports jsonl
+- `localtime(string)`, `utctime(string)`, `tztime(string, tz)`: parse a timestamp string assuming a local/UTC/specified timezone.
+- `unixtime(int64)`: convert unix timestamps (ms/s/us) to time.Time.
+- `within(t, duration)`: check whether `t` is within a duration relative to `now` (e.g. `"-24h"`).
+- `after(t1, t2)`, `before(t1, t2)`: compare times.
+- `gt`, `lt`, `ge`, `le`: general comparison helpers for numbers and times.
+- `grep(input, regex [, group])`: return regex matches from `input`; if `regex` has groups, `group` selects which group to return.
 
-[x] supports jsonarray
+See the examples above for common usage patterns. The tool is designed for fast, streaming transforms and filters on large files.
+
+Useful regex patterns
+
+The expression environment includes a set of pre-defined regular expression constants you can use directly in expressions (they are injected into the `env` map in `expr.go`). The names and typical uses are:
+
+- `reDate`: common date patterns
+- `reTime`: common time patterns
+- `reLink`: URL / link pattern
+- `reEmail`: email address pattern
+- `reIPv4`: IPv4 address pattern
+- `reIPv6`: IPv6 address pattern
+- `reIP`: generic IP address pattern (IPv4 or IPv6)
+- `reNotKnownPort`: pattern for ports that are not known/expected
+- `reMD5Hex`: 32-character hex MD5 digest
+- `reSHA1Hex`: 40-character hex SHA-1 digest
+- `reSHA256Hex`: 64-character hex SHA-256 digest
+- `reGUID`: GUID/UUID pattern
+- `reMACAddress`: MAC address pattern
+- `reGitRepo`: Git repository URL or path pattern
+
+You can use these constants inside expressions, for example:
+
+```
+x | grep(reEmail)
+```

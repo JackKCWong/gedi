@@ -327,15 +327,35 @@ var notempty = expr.Function(
 	new(func(any) bool),
 )
 
-var env = map[string]any{
-	"ms":    time.Millisecond,
-	"sec":   time.Second,
-	"min":   time.Minute,
-	"hour":  time.Hour,
-	"day":   24 * time.Hour,
-	"week":  7 * 24 * time.Hour,
-	"month": 30 * 24 * time.Hour,
-	"year":  365 * 24 * time.Hour,
+var env = map[string]any{}
+
+// initialize env entries using assignment style
+func init() {
+	// time duration constants
+	env["ms"] = time.Millisecond
+	env["sec"] = time.Second
+	env["min"] = time.Minute
+	env["hour"] = time.Hour
+	env["day"] = 24 * time.Hour
+	env["week"] = 7 * 24 * time.Hour
+	env["month"] = 30 * 24 * time.Hour
+	env["year"] = 365 * 24 * time.Hour
+
+	// add the regex constants from regex.go into the env map
+	env["reDate"] = DatePattern
+	env["reTime"] = TimePattern
+	env["reLink"] = LinkPattern
+	env["reEmail"] = EmailPattern
+	env["reIPv4"] = IPv4Pattern
+	env["reIPv6"] = IPv6Pattern
+	env["reIP"] = IPPattern
+	env["reNotKnownPort"] = NotKnownPortPattern
+	env["reMD5Hex"] = MD5HexPattern
+	env["reSHA1Hex"] = SHA1HexPattern
+	env["reSHA256Hex"] = SHA256HexPattern
+	env["reGUID"] = GUIDPattern
+	env["reMACAddress"] = MACAddressPattern
+	env["reGitRepo"] = GitRepoPattern
 }
 
 func enrich(params map[string]any) {
